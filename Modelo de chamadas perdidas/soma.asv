@@ -1,0 +1,10 @@
+function somatorio = soma( A,N )
+somatorio=0;
+
+for indice = 1:1:N
+    
+    somatorio = somatorio + ((A^N)/factorial(N))/
+
+
+end
+
