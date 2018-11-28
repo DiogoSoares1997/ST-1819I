@@ -28,8 +28,8 @@ function [updated_wLinhas,updated_Linhas, transport_line_idx, updated_state_vars
             if (Linhas(idx_line)==0)
                 Linhas(idx_line)=m;
                 transport_line_idx=idx_line;
-                a = find(Fila_espera <= m);
-                Fila_espera(a)=0;
+                a = find(Fila_espera = 
+                Fila_espera(idx_line)=0;
                 state_vars.waitOccupiedLines=state_vars.waitOccupiedLines-1;
                 break;
             end

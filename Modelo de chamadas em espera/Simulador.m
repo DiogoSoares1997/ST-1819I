@@ -10,7 +10,7 @@ config.wLines=70;
 % Numero total de eventos(chamadas) da simulacao
 NEventos=config.bhca/3600*config.simTime;
 Linhas=zeros(config.nLines,1);
-Fila_espera=zeros(config.wLines,1);
+Fila_espera=zeros(1,config.wLines);
 
 %% Estado simulacao
 stateData.occupiedLines=0;      % Linhas ocupadas
@@ -61,7 +61,8 @@ while ( idx_S < length(tinicio) )
                                                   Linhas, ...
                                                   idx_S, ...
                                             tdur(idx_S), ...
-                                              stateData, config);
+                                              stateData, ...
+                                          config);
         tlinha(idx_S)=idx_line;                                  
         idx_S=idx_S+1;
     else
@@ -96,8 +97,8 @@ line([tinicio; tfim], [tlinha; tlinha],...
 
  
 % Trafego Oferecido
-A=stateData.reqServiceTime/tinicio(end)
+A=stateData.reqServiceTime/tinicio(end);
 % Trafego transportado
-A0=stateData.carriedServiceTime/tinicio(end)
+A0=stateData.carriedServiceTime/tinicio(end);
 % Probabilidade de bloqueio
-B=stateData.bloquedCalls/stateData.totalCalls
+B=stateData.bloquedCalls/stateData.totalCalls;
