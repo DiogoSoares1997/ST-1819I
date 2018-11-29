@@ -7,7 +7,10 @@ config.holdTime =140;       % Duracao da chamada em segundos
 config.nLines=25;           % Numero de operadores 
 config.simTime=24*60*60;    % Tempo da simulacao em segundos   
 config.wLines=15;           % Número de linhas da fila de espera
+<<<<<<< HEAD
 config.waitTime=5*60;       % Tempo de espera de referência
+=======
+>>>>>>> master
 % Numero total de eventos(chamadas) da simulacao
 NEventos=config.bhca/3600*config.simTime;
 Linhas=zeros(config.nLines,1);
