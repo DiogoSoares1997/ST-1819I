@@ -4,9 +4,9 @@ close all;
 %% Parametros da simulacao
 config.bhca=500;            % Ritmo de chamadas por hora ch/h
 config.holdTime =140;       % Duracao da chamada em segundos
-config.nLines=10;           % Numero de operadores 
+config.nLines=25;           % Numero de operadores 
 config.simTime=24*60*60;    % Tempo da simulacao em segundos   
-config.wLines=70;
+config.wLines=15;           % Número de linhas da fila de espera
 % Numero total de eventos(chamadas) da simulacao
 NEventos=config.bhca/3600*config.simTime;
 Linhas=zeros(config.nLines,1);
