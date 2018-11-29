@@ -4,9 +4,10 @@ close all;
 %% Parametros da simulacao
 config.bhca=500;            % Ritmo de chamadas por hora ch/h
 config.holdTime =140;       % Duracao da chamada em segundos
-config.nLines=10;           % Numero de operadores 
+config.nLines=25;           % Numero de operadores 
 config.simTime=24*60*60;    % Tempo da simulacao em segundos   
-config.wLines=70;
+config.wLines=15;           % Número de linhas da fila de espera
+config.waitTime=5*60;       % Tempo de espera de referência
 % Numero total de eventos(chamadas) da simulacao
 NEventos=config.bhca/3600*config.simTime;
 Linhas=zeros(config.nLines,1);
@@ -29,27 +30,28 @@ tchamadas=expon(3600/config.bhca,NEventos);
 % Geracao da duracao de cada chamada
 tdur=expon(config.holdTime,NEventos);
 
-% Sequenciacao das chamadas
-tinicio=tchamadas(1);
-tfim=tchamadas(1)+tdur(1);
-
-for n=2:length(tchamadas)
-    tinicio(n)=tinicio(n-1)+tchamadas(n);
-    tfim(n)=tinicio(n)+tdur(n);
-end
-
-tfim_ori=tfim;
-tlinha=zeros(size(tinicio));
-
-%x=[tinicio; tfim];
-%y=[1:length(tinicio); 1:length(tinicio)];
-%figure;
-%%plot(x,y,'k')
-%line(x,y);
-
-% Ordenacao dos eventos de fim de chamada guardando
-% os indices no vetor idx_tfim
-[tfim_ord idx_tfim]=sort(tfim);
+[ tinicio, idx_tfim, tfim_ord, tdur, tlinha, tfim ] = dur_cham( tdur,tchamadas,0 );
+% % Sequenciacao das chamadas
+% tinicio=tchamadas(1);
+% tfim=tchamadas(1)+tdur(1);
+% 
+% for n=2:length(tchamadas)
+%     tinicio(n)=tinicio(n-1)+tchamadas(n);
+%     tfim(n)=tinicio(n)+tdur(n);
+% end
+% 
+% tfim_ori=tfim;
+% tlinha=zeros(size(tinicio));
+% 
+% %x=[tinicio; tfim];
+% %y=[1:length(tinicio); 1:length(tinicio)];
+% %figure;
+% %%plot(x,y,'k')
+% %line(x,y);
+% 
+% % Ordenacao dos eventos de fim de chamada guardando
+% % os indices no vetor idx_tfim
+% [tfim_ord idx_tfim]=sort(tfim);
 
 %% Inicio da simulacao
 idx_S=1;

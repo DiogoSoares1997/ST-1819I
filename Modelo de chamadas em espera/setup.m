@@ -10,6 +10,7 @@ function [updated_wLinhas,updated_Linhas, transport_line_idx, updated_state_vars
             for idx_waitLine = 1: config_vars.wLines
                 if (Fila_espera(idx_waitLine)==0)
                 Fila_espera(idx_waitLine)=idx;
+                
                 transport_line_idx=0;
                 break,
                 end
