@@ -1,4 +1,4 @@
-function [ tinicio, idx_tfim, tfim_ord, tdur, tlinha, tfim ] = dur_cham( tdur,tchamadas, wait_time )
+function [ tinicio, idx_tfim, tfim_ord, tdur, tlinha, tfim ] = wait_time( tdur,tchamadas, wait_time )
 % Sequenciacao das chamadas
 tinicio=tchamadas(1);
 tfim=tchamadas(1)+tdur(1);

@@ -1,4 +1,4 @@
-function [updated_wLinhas,updated_Linhas, transport_line_idx, updated_state_vars]=setup(Fila_espera,Linhas, idx, duracao, state_vars, config_vars)
+function [updated_wLinhas,updated_Linhas,in_wait,call_wait, transport_line_idx, updated_state_vars]=setup(Fila_espera,Linhas, idx, duracao, state_vars, config_vars)
 
     % SETUP (Inicio de chamada)
     state_vars.totalCalls=state_vars.totalCalls+1;
@@ -10,7 +10,8 @@ function [updated_wLinhas,updated_Linhas, transport_line_idx, updated_state_vars
             for idx_waitLine = 1: config_vars.wLines
                 if (Fila_espera(idx_waitLine)==0)
                 Fila_espera(idx_waitLine)=idx;
-                
+                in_wait = true;
+                call_wait=idx;
                 transport_line_idx=0;
                 break,
                 end
@@ -19,9 +20,11 @@ function [updated_wLinhas,updated_Linhas, transport_line_idx, updated_state_vars
             % Chamada Bloqueada
         state_vars.bloquedCalls=state_vars.bloquedCalls+1;
         transport_line_idx=0;
+        in_wait=false;
         end
     else
         m = min(Fila_espera(Fila_espera>0));
+        
         if(m ~= 0)
         % Chamada servida da fila de espera
         state_vars.occupiedLines=state_vars.occupiedLines+1;
@@ -30,8 +33,10 @@ function [updated_wLinhas,updated_Linhas, transport_line_idx, updated_state_vars
                 Linhas(idx_line)=m;
                 transport_line_idx=idx_line;
                 a = find(Fila_espera <= m);
-                Fila_espera(a)=0;
+                Fila_espera(a)=idx;
                 state_vars.waitOccupiedLines=state_vars.waitOccupiedLines-1;
+                in_wait=false;
+                call_wait=idx;
                 break;
             end
         end
@@ -43,6 +48,7 @@ function [updated_wLinhas,updated_Linhas, transport_line_idx, updated_state_vars
                 Linhas(idx_line)=idx;
                 %tlinha(idx)=idx_linha;
                 transport_line_idx=idx_line;
+                in_wait=false;
                 break;
             end
         end
