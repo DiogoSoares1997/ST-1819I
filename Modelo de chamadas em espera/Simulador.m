@@ -3,11 +3,11 @@ close all;
 
 %% Parametros da simulacao
 config.bhca=200;            % Ritmo de chamadas por hora ch/h
-config.holdTime =140;       % Duracao da chamada em segundos
-config.nLines=15;           % Numero de operadores
+config.holdTime =60;       % Duracao da chamada em segundos
+config.nLines=10;           % Numero de operadores
 config.simTime=24*60*60;    % Tempo da simulacao em segundos
-config.wLines=25;           % Número de linhas da fila de espera
-config.waitTime=1*60;       % Tempo de espera de referência
+config.wLines=10;           % Número de linhas da fila de espera
+config.waitTime=1*60;       % Tempo de espera de referência em segundos
 
 % Numero total de eventos(chamadas) da simulacao
 NEventos=config.bhca/3600*config.simTime;
@@ -15,8 +15,8 @@ Linhas=zeros(config.nLines,1);
 Fila_espera=zeros(1,config.wLines);
 
 %% Estado simulacao
-stateData.occupiedLines=0;      % Linhas ocupadas
-stateData.totalCalls=0;         % Numero total de chamadas
+stateData.occupiedLines = 0;      % Linhas ocupadas
+stateData.totalCalls= 0;         % Numero total de chamadas
 stateData.bloquedCalls=0;       % Chamadas bloqueadas
 stateData.reqServiceTime=0;     % Tempo total de oferta
 stateData.carriedServiceTime=0;	% Tempo total de transporte
@@ -61,14 +61,16 @@ while ( idx_S < length(tinicio) )
     % Verifica o tipo de evento SETUP ou RELEASE
     if ( tinicio(idx_S) < tfim_ord(idx_R) )
         [Fila_espera , Linhas,in_wait,call_wait, idx_line, stateData]=setup(Fila_espera,...
-            Linhas, ...
-            idx_S, ...
-            tdur(idx_S), ...
-            stateData, ...
-            config);
+                                                                            Linhas, ...
+                                                                            idx_S, ...
+                                                                            tdur(idx_S), ...
+                                                                            stateData, ...
+                                                                            config);
         if(in_wait==true)
+            tinicio(call_wait)=tinicio(call_wait)+ tchamadas(call_wait)+ config.waitTime;
             tfim(call_wait)=tinicio(call_wait)+ tdur(call_wait)+ config.waitTime;
             [tfim_ord idx_tfim]=sort(tfim);
+            tfim_ori=tfim;
         end
         tlinha(idx_S)=idx_line;
         idx_S=idx_S+1;
