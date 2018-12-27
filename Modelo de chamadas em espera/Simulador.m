@@ -2,17 +2,19 @@ clear all;
 close all;
 
 %% Parametros da simulacao
-config.bhca=200;            % Ritmo de chamadas por hora ch/h
-config.holdTime =60;       % Duracao da chamada em segundos
-config.nLines=10;           % Numero de operadores
+config.bhca=10;            % Ritmo de chamadas por hora ch/h
+config.holdTime =154.44;       % Duracao da chamada em segundos
+config.nLines=10;           % Numero de linhas
 config.simTime=24*60*60;    % Tempo da simulacao em segundos
-config.wLines=10;           % Número de linhas da fila de espera
-config.waitTime=1*60;       % Tempo de espera de referência em segundos
+config.nOperators=2;
+%config.wLines=100;           % Número de linhas da fila de espera
+%config.waitTime=5*60;       % Tempo de espera de referência em segundos
 
 % Numero total de eventos(chamadas) da simulacao
 NEventos=config.bhca/3600*config.simTime;
 Linhas=zeros(config.nLines,1);
-Fila_espera=zeros(1,config.wLines);
+%Fila_espera=zeros(1,config.wLines);
+Operators=zeros(config.nOperators,1);
 
 %% Estado simulacao
 stateData.occupiedLines = 0;      % Linhas ocupadas
@@ -20,7 +22,9 @@ stateData.totalCalls= 0;         % Numero total de chamadas
 stateData.bloquedCalls=0;       % Chamadas bloqueadas
 stateData.reqServiceTime=0;     % Tempo total de oferta
 stateData.carriedServiceTime=0;	% Tempo total de transporte
-stateData.waitOccupiedLines=0;  % Nº Linhas ocupadas na fila de espera
+%stateData.waitOccupiedLines=0;  % Nº Linhas ocupadas na fila de espera
+stateData.calltowait=0;         % Nº de chamadas que foram para fila de espera
+stateData.occupiedOpe=0;        % Nº de operadores ocupados
 %stateData.totalHoldingTime=0;   %
 %stateData.totalnextCallTime=0;  %
 
@@ -60,17 +64,15 @@ idx_R=1;
 while ( idx_S < length(tinicio) )
     % Verifica o tipo de evento SETUP ou RELEASE
     if ( tinicio(idx_S) < tfim_ord(idx_R) )
-        [Fila_espera , Linhas,in_wait,call_wait, idx_line, stateData]=setup(Fila_espera,...
+        [Operators , Linhas,not_attended,call_idx, idx_line, stateData]=setup(Operators,...
                                                                             Linhas, ...
                                                                             idx_S, ...
                                                                             tdur(idx_S), ...
                                                                             stateData, ...
                                                                             config);
-        if(in_wait==true)
-            tinicio(call_wait)=tinicio(call_wait)+ tchamadas(call_wait)+ config.waitTime;
-            tfim(call_wait)=tinicio(call_wait)+ tdur(call_wait)+ config.waitTime;
-            [tfim_ord idx_tfim]=sort(tfim);
-            tfim_ori=tfim;
+        if(not_attended==true)
+            x = find(idx_tfim == call_idx);
+            idx_tfim(x)=0;
         end
         tlinha(idx_S)=idx_line;
         idx_S=idx_S+1;
@@ -78,11 +80,14 @@ while ( idx_S < length(tinicio) )
         % RELEASE (Fim de chamada)
         % Verifica se o evento de fim de chamada e valido
         % Valido para tempo do fim de chamada superior a zero
-        if (tfim(idx_tfim(idx_R)) > 0)
+        if (idx_tfim(idx_R)~= 0)
+            if (tfim(idx_tfim(idx_R)) > 0)
             % Caso seja valido
-            [Linhas, stateData]=release(Linhas, ...
-                idx_tfim(idx_R), ...
-                stateData, config);
+            [tfim_ord,idx_tfim,tnicio,tfim,Operators,Linhas, stateData]=release(Operators, ...
+                                        Linhas, ...
+                                        idx_tfim(idx_R), ...
+                                        stateData, config,tinicio,tfim,tdur);
+            end
         end
         % Incrementa o indice do proximo evento de Fim de chamada
         idx_R=idx_R+1;
@@ -111,3 +116,4 @@ A=stateData.reqServiceTime/tinicio(end);
 A0=stateData.carriedServiceTime/tinicio(end);
 % Probabilidade de bloqueio
 B=stateData.bloquedCalls/stateData.totalCalls;
+
