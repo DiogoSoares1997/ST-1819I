@@ -9,17 +9,20 @@ if (state_vars.occupiedLines < config_vars.nLines)
         state_vars.occupiedLines=state_vars.occupiedLines+1;
         for idx_line=1: config_vars.nLines    %resolver este modo pois não vai resultar, talvez considera criar o ciclo para as linhas e depois se confirmares que a linha está fazia entao vai completar a de operadores
             if (Linhas(idx_line) == 0)
-                 for idx_op=1: config_vars.nOperators
-                    Linhas(idx_line)=idx;
-                    Operators(idx_op)=idx;
-                    transport_line_idx=idx_line;
-                    not_attended = false;
-                    call_idx = 0;
-                    break;
-                end
-           
-                
+                Linhas(idx_line)=idx;
+                transport_line_idx=idx_line;
+                not_attended = false;
+                call_idx = 0;
+                 for idx_op=1 : config_vars.nOperators
+                     if (Operators(idx_op) == 0)
+                        Operators(idx_op)=idx;
+                     break;
+                     else
+                        
+                     end
+                 end
                 break;
+            else
             end
         end
     else

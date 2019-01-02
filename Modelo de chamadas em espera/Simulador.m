@@ -2,11 +2,11 @@ clear all;
 close all;
 
 %% Parametros da simulacao
-config.bhca=10;            % Ritmo de chamadas por hora ch/h
-config.holdTime =154.44;       % Duracao da chamada em segundos
+config.bhca=150;            % Ritmo de chamadas por hora ch/h
+config.holdTime =120;       % Duracao da chamada em segundos
 config.nLines=10;           % Numero de linhas
 config.simTime=24*60*60;    % Tempo da simulacao em segundos
-config.nOperators=2;
+config.nOperators=5;
 %config.wLines=100;           % Número de linhas da fila de espera
 %config.waitTime=5*60;       % Tempo de espera de referência em segundos
 
@@ -80,13 +80,16 @@ while ( idx_S < length(tinicio) )
         % RELEASE (Fim de chamada)
         % Verifica se o evento de fim de chamada e valido
         % Valido para tempo do fim de chamada superior a zero
-        if (idx_tfim(idx_R)~= 0)
+        if(idx_tfim(idx_R)~=0)
             if (tfim(idx_tfim(idx_R)) > 0)
             % Caso seja valido
-            [tfim_ord,idx_tfim,tnicio,tfim,Operators,Linhas, stateData]=release(Operators, ...
+            [tfim_ord,idx_tfim,tnicio,tfim,Operators,Linhas, stateData,wait]=release(Operators, ...
                                         Linhas, ...
                                         idx_tfim(idx_R), ...
                                         stateData, config,tinicio,tfim,tdur);
+                                    if(wait==1)
+                                        idx_R=idx_R-1;
+                                    end
             end
         end
         % Incrementa o indice do proximo evento de Fim de chamada
