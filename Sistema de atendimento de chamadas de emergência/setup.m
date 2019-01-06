@@ -1,10 +1,10 @@
-function [updated_nOperators,updated_Linhas,not_attended,call_idx, updated_state_vars]=setup(Operators112,OperatorsINEM,Lines112,LinesINEM,Type, idx, duracao, state_vars, config_vars)
+function [updated_nOperators,updated_Linhas,not_attended,call_idx, updated_state_vars]=setup(Operators112,OperatorsINEM,OperatorsTriagem, Lines112,LinesINEM,Type, idx, duracao, state_vars, config_vars)
 
 % SETUP (Inicio de chamada)
 state_vars.totalCalls  = state_vars.totalCalls+1;
 state_vars.reqServiceTime=state_vars.reqServiceTime+duracao;
 if( strcmp(Type(idx),'112'))
-    if (state_vars.occupiedLines112 < config_vars.nLines112)
+    if (state_vars.occupiedLines112 < config_vars.nLines112) %Entrada 
         for idx_triagem=1: config_vars.nLines112
             if(Lines112(idx_triagem)==0)
                state_vars.occupiedLines112=state_vars.occupiedLines112+1;

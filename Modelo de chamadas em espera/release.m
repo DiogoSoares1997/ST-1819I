@@ -19,6 +19,7 @@ function [tfim_ord,idx_tfim,tinicio,tfim,updated_Operators,updated_Linhas, updat
                         if(m~=0)
                             if(verificar_ope(Operators,m)==0)
                                 Operators(a)=m;
+                                
                                 tinicio(m)=tfim(idx);
                                 tfim(m)=tinicio(m)+tdur(m);
                                 [tfim_ord, idx_tfim]=sort(tfim);

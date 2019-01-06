@@ -3,7 +3,7 @@ close all;
 %% Parametros de Simulação
 config.nLines112=10;
 config.nLinesINEM=10;
-config.nOperatorsTriagem=5;
+
 config.nOperators112=5;
 config.nOperatorsINEM=10;
 
@@ -11,7 +11,7 @@ Lines112=zeros(config.nLines112,1);
 LinesINEM=zeros(config.nLinesINEM,1);
 Operators112=zeros(config.nOperators112,1);
 OperatorsINEM=zeros(config.nOperatorsINEM,1);
-OperatorsTriagem=zeros(config.nOperatorsTriagem,1);
+
 %% Estado da simulação
 stateData.occupiedLines112 = 0;      % Linhas ocupadas do 112
 stateData.occupiedLinesINEM = 0;      % Linhas ocupadas do INEM
@@ -25,7 +25,6 @@ stateData.carriedServiceTimeINEM = 0;
 stateData.calltowait=0;         % Nº de chamadas que foram para fila de espera
 stateData.occupiedOpe112=0; % Nº de operadores ocupados do 112
 stateData.occupiedOpeINEM=0; % Nº de operadores ocupados do 112
-stateData.occupiedOpeTriagem=0; % Nº de operadores ocupados do 112
 
 %% Simulação
 [Start1,Type1,HandlingTime1] = importfile('Dados G31.txt',2, 1465);
@@ -50,6 +49,7 @@ while ( idx_S < length(Start1) )
     if ( Start1(idx_S) < tfim_ord(idx_R) )
         [Operators , Linhas,not_attended,call_idx, stateData]=setup(Operators112,...
                                                                     OperatorsINEM, ...
+                                                                    OperatorsTriagem, ...
                                                                     Lines112, ...
                                                                     LinesINEM, ...
                                                                     Type1, ...
