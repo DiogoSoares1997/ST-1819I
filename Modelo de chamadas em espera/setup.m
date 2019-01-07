@@ -4,10 +4,11 @@ function [updated_nOperators,updated_Linhas,not_attended,call_idx, transport_lin
 state_vars.totalCalls  = state_vars.totalCalls+1;
 state_vars.reqServiceTime=state_vars.reqServiceTime+duracao;
 if (state_vars.occupiedLines < config_vars.nLines)
+    state_vars.occupiedLines=state_vars.occupiedLines+1;
     if(state_vars.occupiedOpe < config_vars.nOperators)
         state_vars.occupiedOpe=state_vars.occupiedOpe+1;
-        state_vars.occupiedLines=state_vars.occupiedLines+1;
-        for idx_line=1: config_vars.nLines    %resolver este modo pois não vai resultar, talvez considera criar o ciclo para as linhas e depois se confirmares que a linha está fazia entao vai completar a de operadores
+        state_vars.acccalls=state_vars.acccalls+1;
+        for idx_line=1: config_vars.nLines    
             if (Linhas(idx_line) == 0)
                 Linhas(idx_line)=idx;
                 transport_line_idx=idx_line;
@@ -16,18 +17,14 @@ if (state_vars.occupiedLines < config_vars.nLines)
                  for idx_op=1 : config_vars.nOperators
                      if (Operators(idx_op) == 0)
                         Operators(idx_op)=idx;
-                     break;
-                     else
-                        
+                     break;  
                      end
                  end
                 break;
-            else
             end
         end
     else
         % Chamada em fila de espera
-        state_vars.occupiedLines=state_vars.occupiedLines+1;
         state_vars.calltowait=state_vars.calltowait+1;
         for idx_line = 1: config_vars.nLines
             if (Linhas(idx_line)==0)
@@ -40,59 +37,9 @@ if (state_vars.occupiedLines < config_vars.nLines)
         end
         
     end
+    state_vars.carriedServiceTime=state_vars.carriedServiceTime+duracao;
 else
-%     m = min(Fila_espera(Fila_espera>0));
-%     
-%     if(m ~= 0)
-%         % Chamada servida da fila de espera
-%         state_vars.occupiedLines=state_vars.occupiedLines+1;
-%         for idx_line=1: config_vars.nLines
-%             if (Linhas(idx_line)==0)
-%                 Linhas(idx_line)=m;
-%                 transport_line_idx=idx_line;
-%                 a = find(Fila_espera == m);
-%                 Fila_espera(1,a)=idx;
-%                 in_wait=true;
-%                 call_wait=idx;
-%                 break;
-%             end
-%         end
-%         while state_vars.occupiedLines < config_vars.nLines
-%             for idx_line=1: config_vars.nLines
-%                 if (Linhas(idx_line)==0)
-%                     m = min(Fila_espera(Fila_espera>0));
-%                     if (m~=0)
-%                         Linhas(idx_line)=m;
-%                         transport_line_idx=idx_line;
-%                         a = find(Fila_espera == m);
-%                         Fila_espera(1,a)=0;
-%                         state_vars.occupiedLines= state_vars.occupiedLines+1;
-%                         state_vars.waitOccupiedLines=state_vars.waitOccupiedLines-1;
-%                     else
-%                         break;
-%                     end
-%                 else
-%                     break;
-%                 end
-%                 break;
-%             end
-%             break;
-%         end
-%     else
-%         % Chamada servida
-%         state_vars.occupiedLines=state_vars.occupiedLines+1;
-%         for idx_line=1: config_vars.nLines
-%             if (Linhas(idx_line) == 0)
-%                 Linhas(idx_line)=idx;
-%                 %tlinha(idx)=idx_linha;
-%                 transport_line_idx=idx_line;
-%                 in_wait = false;
-%                 call_wait=idx;
-%                 break;
-%             end
-%         end
-%         state_vars.carriedServiceTime=state_vars.carriedServiceTime+duracao;
-%     end
+
 % Chamada Bloqueada
         state_vars.bloquedCalls=state_vars.bloquedCalls+1;
         transport_line_idx=0;

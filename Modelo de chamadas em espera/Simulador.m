@@ -2,8 +2,8 @@ clear all;
 close all;
 
 %% Parametros da simulacao
-config.bhca=150;            % Ritmo de chamadas por hora ch/h
-config.holdTime =120;       % Duracao da chamada em segundos
+config.bhca=250;            % Ritmo de chamadas por hora ch/h
+config.holdTime =60;       % Duracao da chamada em segundos
 config.nLines=10;           % Numero de linhas
 config.simTime=24*60*60;    % Tempo da simulacao em segundos
 config.nOperators=5;
@@ -15,6 +15,7 @@ NEventos=config.bhca/3600*config.simTime;
 Linhas=zeros(config.nLines,1);
 %Fila_espera=zeros(1,config.wLines);
 Operators=zeros(config.nOperators,1);
+wait_time1=zeros(24*config.bhca,1);
 
 %% Estado simulacao
 stateData.occupiedLines = 0;      % Linhas ocupadas
@@ -25,6 +26,7 @@ stateData.carriedServiceTime=0;	% Tempo total de transporte
 %stateData.waitOccupiedLines=0;  % Nº Linhas ocupadas na fila de espera
 stateData.calltowait=0;         % Nº de chamadas que foram para fila de espera
 stateData.occupiedOpe=0;        % Nº de operadores ocupados
+stateData.acccalls=0;
 %stateData.totalHoldingTime=0;   %
 %stateData.totalnextCallTime=0;  %
 
@@ -39,7 +41,7 @@ tdur=expon(config.holdTime,NEventos);
 % % Sequenciacao das chamadas
 % tinicio=tchamadas(1);
 % tfim=tchamadas(1)+tdur(1);
-%
+%idx_R
 % for n=2:length(tchamadas)
 %     tinicio(n)=tinicio(n-1)+tchamadas(n);
 %     tfim(n)=tinicio(n)+tdur(n);
@@ -73,6 +75,7 @@ while ( idx_S < length(tinicio) )
         if(not_attended==true)
             x = find(idx_tfim == call_idx);
             idx_tfim(x)=0;
+            tfim(call_idx)= NaN;
         end
         tlinha(idx_S)=idx_line;
         idx_S=idx_S+1;
@@ -83,12 +86,17 @@ while ( idx_S < length(tinicio) )
         if(idx_tfim(idx_R)~=0)
             if (tfim(idx_tfim(idx_R)) > 0)
             % Caso seja valido
-            [tfim_ord,idx_tfim,tnicio,tfim,Operators,Linhas, stateData,wait]=release(Operators, ...
+            [tfim_ord,idx_tfim,tnicio,tfim,Operators,Linhas, stateData,wait,wait_time1,diogo]=release(Operators, ...
                                         Linhas, ...
                                         idx_tfim(idx_R), ...
-                                        stateData, config,tinicio,tfim,tdur);
+                                        stateData, ...
+                                        config,...
+                                        tinicio,...
+                                        tfim,...
+                                        tdur,...
+                                        wait_time1);
                                     if(wait==1)
-                                        idx_R=idx_R-1;
+                                        idx_R=find(idx_tfim == diogo);
                                     end
             end
         end
@@ -113,10 +121,29 @@ line([tinicio; tfim], [tlinha; tlinha],...
     'Color',[0 0 1]);
 
 
-% Trafego Oferecido
-A=stateData.reqServiceTime/tinicio(end);
-% Trafego transportado
-A0=stateData.carriedServiceTime/tinicio(end);
-% Probabilidade de bloqueio
-B=stateData.bloquedCalls/stateData.totalCalls;
+% Tráfego Oferecido
+A_real=stateData.reqServiceTime/tinicio(end)
+A_teorico=(config.bhca*config.holdTime)/3600
+% % Probabilidade de perda de chamada
+% B_real=stateData.bloquedCalls/stateData.totalCalls
+% B_teorico=Pb( A_teorico, config.nOperators)
+% Tráfego transportado
+A0_real=stateData.carriedServiceTime/tinicio(end)
+A0_teorico=A_teorico*(1-B_teorico)
+% Probabilidade de espera
+C_real=stateData.calltowait/stateData.totalCalls
+% C_teorico=PWait(config.nOperators, A0_teorico)
+%C_teo=(B_teoricoconfig.nOperators)/(config.nOperators-(A0_teorico(1-B_teorico)))
+% Tempo médio de espera
+wait_time1(wait_time1==0)=NaN;
+wTime_real=mean(wait_time1,'omitnan')
+wTime_teorico=config.holdTime/(config.nOperators-A_teorico)
+% Número médio de chamadas em espera
+avgWaitCalls_real=stateData.calltowait/stateData.totalCalls
+avgWaitCalls_teorico=C_realstateData.totalCalls
+%Probabilidade de espera superior ao tempo de referência
+%tw=config.holdTime/(config.nLines-A_teorico)
+%p_maiorref_teorico=PWait(config.nOperators, A_teorico)exp(-config.waitTime/tw)
+%p_maiorref_real=
+%p_maiorref_teorico=PWait(config.nOperators, A_teorico)exp(-(config.nOperators-A_teorico)*(config.waitTime/config.holdTime))
 
