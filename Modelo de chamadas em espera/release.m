@@ -1,4 +1,4 @@
-function [tfim_ord,idx_tfim,tinicio,tfim,updated_Operators,updated_Linhas, updated_state_vars, wait_R,Updatedwait_time,diogo]=release(Operators,Linhas, idx, state_vars, config_vars,tinicio,tfim,tdur,wait_time)
+function [tfim_ord,idx_tfim,tinicio,tfim,updated_Operators,updated_Linhas, updated_state_vars, wait_R,Updatedwait_time,diogo]=release(Operators,Linhas, idx, state_vars, config_vars,tinicio,tfim,tdur,tfim_ord,idx_tfim,wait_time)
     wait_R=0;
     if (idx ~= 0)
         % Procura a linha onde a chamada esta a ser transportada 
@@ -46,14 +46,11 @@ function [tfim_ord,idx_tfim,tinicio,tfim,updated_Operators,updated_Linhas, updat
                    
                 end
             end
-            [tfim_ord, idx_tfim]=sort(tfim);
+            tfim_ord = tfim_ord;
+            idx_tfim = idx_tfim;
             tfim=tfim;
             tinicio=tinicio;
         end
-    else
-        [tfim_ord, idx_tfim]=sort(tfim);
-        tfim=tfim;
-        tinicio=tinicio;
     end
     Updatedwait_time=wait_time;
     updated_Operators=Operators;

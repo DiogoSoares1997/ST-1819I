@@ -2,13 +2,13 @@ clear all;
 close all;
 
 %% Parametros da simulacao
-config.bhca=250;            % Ritmo de chamadas por hora ch/h
-config.holdTime =60;       % Duracao da chamada em segundos
+config.bhca=200;            % Ritmo de chamadas por hora ch/h
+config.holdTime = 140;       % Duracao da chamada em segundos
 config.nLines=10;           % Numero de linhas
 config.simTime=24*60*60;    % Tempo da simulacao em segundos
-config.nOperators=5;
+config.nOperators=10;
 %config.wLines=100;           % Número de linhas da fila de espera
-%config.waitTime=5*60;       % Tempo de espera de referência em segundos
+config.waitTime=1*60;       % Tempo de espera de referência em segundos
 
 % Numero total de eventos(chamadas) da simulacao
 NEventos=config.bhca/3600*config.simTime;
@@ -94,6 +94,8 @@ while ( idx_S < length(tinicio) )
                                         tinicio,...
                                         tfim,...
                                         tdur,...
+                                        tfim_ord, ...
+                                        idx_tfim, ... 
                                         wait_time1);
                                     if(wait==1)
                                         idx_R=find(idx_tfim == diogo);
@@ -120,30 +122,31 @@ line([tinicio; tfim], [tlinha; tlinha],...
     'Linewidth',3,...
     'Color',[0 0 1]);
 
-
 % Tráfego Oferecido
-A_real=stateData.reqServiceTime/tinicio(end)
-A_teorico=(config.bhca*config.holdTime)/3600
-% % Probabilidade de perda de chamada
-% B_real=stateData.bloquedCalls/stateData.totalCalls
-% B_teorico=Pb( A_teorico, config.nOperators)
+A_real=stateData.reqServiceTime/tinicio(end);
+A_teorico=(config.bhca*config.holdTime)/3600;
+% Probabilidade de perda de chamada
+B_real=stateData.bloquedCalls/stateData.totalCalls;
+B_teorico=Pb( A_real,config.nOperators);
 % Tráfego transportado
-A0_real=stateData.carriedServiceTime/tinicio(end)
-A0_teorico=A_teorico*(1-B_teorico)
+A0_real=stateData.carriedServiceTime/tinicio(end);
+A0_teorico=A_real*(1-B_real);
 % Probabilidade de espera
-C_real=stateData.calltowait/stateData.totalCalls
-% C_teorico=PWait(config.nOperators, A0_teorico)
-%C_teo=(B_teoricoconfig.nOperators)/(config.nOperators-(A0_teorico(1-B_teorico)))
+C_real=stateData.calltowait/(stateData.totalCalls-stateData.bloquedCalls);
+%C_teorico=PWait(config.nOperators, A_real);
+erlangb=0.03;   % valor da probabilidade de bloqueio para linha de espera infinita (tabela Erlang B)
+%C_teorico=(B_real*config.nOperators)/(config.nOperators-A_real*(1-B_real));
+C_teo=(erlangb*config.nOperators)/(config.nOperators-A_real*(1-erlangb));
 % Tempo médio de espera
-wait_time1(wait_time1==0)=NaN;
-wTime_real=mean(wait_time1,'omitnan')
-wTime_teorico=config.holdTime/(config.nOperators-A_teorico)
-% Número médio de chamadas em espera
-avgWaitCalls_real=stateData.calltowait/stateData.totalCalls
-avgWaitCalls_teorico=C_realstateData.totalCalls
+wait_time(wait_time==0)=NaN;
+wTime_real=mean(wait_time,'omitnan');
+wTime_teorico=(config.holdTime)/(config.nOperators-A_real);
+% Número médio de chamadas em espera: calculado fazendo vários testes com
+% os mesmos parâmetros de simulação e guardando os valores num ficheiro
+% excel
 %Probabilidade de espera superior ao tempo de referência
-%tw=config.holdTime/(config.nLines-A_teorico)
-%p_maiorref_teorico=PWait(config.nOperators, A_teorico)exp(-config.waitTime/tw)
-%p_maiorref_real=
-%p_maiorref_teorico=PWait(config.nOperators, A_teorico)exp(-(config.nOperators-A_teorico)*(config.waitTime/config.holdTime))
-
+temp=zeros(length(wait_time1), 1);
+temp=find(wait_time1>config.waitTime);
+waitTimeProbRef_real=length(temp)/stateData.calltowait;
+waitTimeProbRef_teorico=C_real*exp(-config.waitTime/(config.holdTime/(config.nOperators-A_real)));
+waitTimeProbRef_teorico2=C_real*exp(-((config.nOperators-A_real)*config.waitTime)/config.holdTime);

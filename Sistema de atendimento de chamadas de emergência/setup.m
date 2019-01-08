@@ -2,38 +2,39 @@ function [updated_nOperators112,updated_nOperatorsINEM,updated_Lines112,updated_
 
 % SETUP (Inicio de chamada)
 state_vars.totalCalls  = state_vars.totalCalls+1;
-state_vars.reqServiceTime=state_vars.reqServiceTime+duracao;
 if( strcmp(Type(idx),'112'))
+    state_vars.reqServiceTime112=state_vars.reqServiceTime112+duracao;
     if (state_vars.occupiedLines112 < config_vars.nLines112) %Entrada da chamada nas linhas 112
         for idx_triagem=1: config_vars.nLines112
             if(Lines112(idx_triagem)==0)
-               state_vars.occupiedLines112=state_vars.occupiedLines112+1;
-               Lines112(idx_triagem)=idx;
-               break;
+                state_vars.occupiedLines112=state_vars.occupiedLines112+1;
+                Lines112(idx_triagem)=idx;
+                break;
             end
         end
         if(state_vars.occupiedOpe112 < config_vars.nOperators112) %Atendimento por um op de 112
-           state_vars.occupiedOpe112=state_vars.occupiedOpe112+1;
-        
-            for idx_Opt=1: config_vars.nOperators112   
+            state_vars.occupiedOpe112=state_vars.occupiedOpe112+1;
+            not_attended = false;
+            for idx_Opt=1: config_vars.nOperators112
                 if (Operators112(idx_Opt) == 0)
                     Operators112(idx_Opt)=idx;
-                    not_attended = false;
-                    call_idx = 0;
+                    
+                    call_idx = idx;
                     break;
                 end
             end
             
             
-         else
+        else
             % Chamada em fila de espera NO 112
+             not_attended = true;
             state_vars.calltowait=state_vars.calltowait+1;
             for idx_112 = 1: length(FilaDeEspera112)
                 if (FilaDeEspera112(idx_112)==0)
                     FilaDeEspera112(idx_112)=idx;
-                    not_attended = true;
+                   
                     call_idx=idx;
-                    transport_line_idx=idx_line;
+                    transport_line_idx=idx;
                     break,
                 end
             end
@@ -45,21 +46,23 @@ if( strcmp(Type(idx),'112'))
         call_idx=idx;
     end
 else
-    if(state_vars.occupiedLinesINEM < config.nLinesINEM)
+    state_vars.reqServiceTimeINEM=state_vars.reqServiceTimeINEM+duracao;
+    if(state_vars.occupiedLinesINEM < config_vars.nLinesINEM)
         state_vars.occupiedLinesINEM=state_vars.occupiedLinesINEM+1;
         for idx_INEM=1: config_vars.nLinesINEM
             if(LinesINEM(idx_INEM)==0)
-               LinesINEM(idx_INEM)=idx;
-               break;
+                LinesINEM(idx_INEM)=idx;
+                break;
             end
         end
         
-        if(state_vars.occupiedOpeINEM < config.nOperatorsINEM)
+        if(state_vars.occupiedOpeINEM < config_vars.nOperatorsINEM)
             state_vars.occupiedOpeINEM=state_vars.occupiedOpeINEM+1;
-            for idx_op=1: config_vars.nOperatorsINEM   
+            not_attended = false;
+            for idx_op=1: config_vars.nOperatorsINEM
                 if (OperatorsINEM(idx_op) == 0)
                     OperatorsINEM(idx_op)=idx;
-                    not_attended = false;
+                    
                     call_idx = 0;
                     break;
                 end
@@ -67,12 +70,13 @@ else
         else
             % Chamada em fila de espera NO INEM
             state_vars.calltowaitINEM=state_vars.calltowaitINEM+1;
-            for idx = 1: length(FilaDeEsperaINEM)
-                if (FilaDeEsperaINEM(idx)==0)
-                    FilaDeEsperaINEM(idx)=idx;
-                    not_attended = true;
+            not_attended = true;
+            for idx_1 = 1: length(FilaDeEsperaINEM)
+                if (FilaDeEsperaINEM(idx_1)==0)
+                    FilaDeEsperaINEM(idx_1)=idx;
+                    
                     call_idx=idx;
-                    transport_line_idx=idx_line;
+                    transport_line_idx=idx;
                     break,
                 end
             end
@@ -97,21 +101,22 @@ else
                 end
             end
         else
-        state_vars.bloquedCalls=state_vars.bloquedCalls+1;
-        transport_line_idx=0;
-        not_attended=true;
-        call_idx=idx;
+            state_vars.bloquedCalls=state_vars.bloquedCalls+1;
+            transport_line_idx=0;
+            not_attended=true;
+            call_idx=idx;
         end
-    
+        
     end
-
-updated_state_vars=state_vars;
-updated_nOperators112=Operators112;
-updated_nOperatorsINEM=OperatorsINEM;
-updated_Lines112=Lines112;
-updated_LinesINEM=LinesINEM;
-updated_FE112=FilaDeEspera112;
-updated_FEINEM=FilaDeEsperaINEM;
-updated_FEINEM112=FEINEM112;
-
+    
+    
+end
+    updated_state_vars=state_vars;
+    updated_nOperators112=Operators112;
+    updated_nOperatorsINEM=OperatorsINEM;
+    updated_Lines112=Lines112;
+    updated_LinesINEM=LinesINEM;
+    updated_FE112=FilaDeEspera112;
+    updated_FEINEM=FilaDeEsperaINEM;
+    updated_FEINEM112=FEINEM112;
 end
