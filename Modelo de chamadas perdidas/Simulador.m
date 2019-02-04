@@ -102,3 +102,5 @@ Probabilidade_de_Bloqueio_B_teorico=Pb(Trafego_Oferecido_teorico_A_,config.nLine
 Trafego_transportado_A0_=stateData.carriedServiceTime/tinicio(end)
 Trafego_transportado_teorico_A0_=Trafego_Oferecido_teorico_A_*(1-Probabilidade_de_Bloqueio_B_teorico)
 % Falta o tempo médio entre chamadas (?) o que é ao certo ?
+timeBetweenCalls_real=config.simTime/stateData.totalCalls
+timeBetweenCalls_teorico = 1/(config.bhca/3600)
