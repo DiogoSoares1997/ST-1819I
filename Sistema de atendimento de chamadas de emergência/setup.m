@@ -1,6 +1,7 @@
 function [updated_nOperators112,updated_nOperatorsINEM,updated_Lines112,updated_LinesINEM,updated_FE112,updated_FEINEM,updated_FEINEM112,not_attended,call_idx, updated_state_vars]=setup(Operators112,OperatorsINEM, Lines112,LinesINEM,FilaDeEspera112,FilaDeEsperaINEM,FEINEM112,Type, idx, duracao, state_vars, config_vars)
 
 % SETUP (Inicio de chamada)
+call_idx=idx;
 state_vars.totalCalls  = state_vars.totalCalls+1;
 if( strcmp(Type(idx),'112'))
     state_vars.reqServiceTime112=state_vars.reqServiceTime112+duracao;
@@ -86,7 +87,7 @@ else
             state_vars.occupiedLines112=state_vars.occupiedLines112+1;
             not_attended=true;
             call_idx = idx;
-            transport_line_idx=idx_line;
+            transport_line_idx=idx;
             for idx_triagem=1: config_vars.nLines112
                 if(Lines112(idx_triagem)==0)
                     state_vars.occupiedLines112=state_vars.occupiedLines112+1;

@@ -1,4 +1,4 @@
-function [tfim_ord,idx_tfim,updated_Operators112,updated_OperatorsINEM,updated_Lines112,updated_LinesINEM,UP_FE112,UP_FEINEM,UP_FEINEM112, updated_state_vars, wait_R,End1,Start,last]=release(Operators112,OperatorsINEM,Lines112,LinesINEM,FE112,FEINEM,FEINEM112,Type, idx, state_vars,tfim_ord,idx_tfim,End,HandlingTime,Start, config_vars)
+function [tfim_ord,idx_tfim,updated_Operators112,updated_OperatorsINEM,updated_Lines112,updated_LinesINEM,UP_FE112,UP_FEINEM,UP_FEINEM112, updated_state_vars, wait_R,End,Start,last]=release(Operators112,OperatorsINEM,Lines112,LinesINEM,FE112,FEINEM,FEINEM112,Type, idx, state_vars,tfim_ord,idx_tfim,End,HandlingTime,Start, config_vars)
 wait_R=0;
 if ( strcmp(Type(idx),'112'))
     if (idx ~= 0)
@@ -20,13 +20,10 @@ if ( strcmp(Type(idx),'112'))
                         if(m~=0)
                             if(verificar_ope(FE112,m)==1)
                                 Operators112(a)=m; %%Estou aqui
-                                Start(m,:)=End(idx,:);
-                                End(m,:)= Conversor_unique( HandlingTime, Start(m,:));
-                                End1=zeros(length(Start1),1);
-                                for i=1:length(Start1)
-                                    End1(i)=datenum(End(i,:));
-                                end
-                                [tfim_ord, idx_tfim]=sort(End1);
+                                Start(m)=End(idx);
+                                End(m)= Start(m)+ HandlingTime;
+                                
+                                [tfim_ord, idx_tfim]=sort(End);
                                 state_vars.occupiedOpe112=state_vars.occupiedOpe112+1;
                                 wait_R=1;
                                 break;
@@ -60,13 +57,9 @@ else
                         if(n~=0)
                             if(verificar_ope(FEINEM,n)==1)
                                 OperatorsINEM(a)=n; %%Estou aqui
-                                Start(n,:)=End(idx,:);
-                                End(n,:)= Conversor_unique( HandlingTime, Start(n,:));
-                                End1=zeros(length(Start),1);
-                                for i=1:length(Start)
-                                    End1(i)=datenum(End(i,:));
-                                end
-                                [tfim_ord, idx_tfim]=sort(End1);
+                                Start(n)=End(idx);
+                                End(n)= Start(n)+ HandlingTime;
+                                [tfim_ord, idx_tfim]=sort(End);
                                 a = find (FEINEM==n);
                                 FEINEM(a)=0;
                                 state_vars.occupiedOpeINEM=state_vars.occupiedOpeINEM+1;
@@ -75,11 +68,11 @@ else
                                 if( x ~=0)
                                     FEINEM(a)=x;
                                     b = find (FEINEM112==x);
-                                    FEINEM(b)=0;
+                                    FEINEM112(b)=0;
                                 end
                                 break;
                             else
-                                m = min(LinesINEM(LinesINEM>m));
+                                n = min(LinesINEM(LinesINEM>n));
                             end
                         else
                             break;
@@ -103,9 +96,6 @@ last = idx;
 updated_state_vars=state_vars;
 tfim_ord = tfim_ord;
 idx_tfim = idx_tfim;
-End1=zeros(length(Start),1);
-                                for i=1:length(Start)
-                                    End1(i)=datenum(End(i,:));
-                                end
+End=End;
 Start=Start;
 end
