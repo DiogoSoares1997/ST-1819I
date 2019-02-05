@@ -1,10 +1,10 @@
 clear all;
 close all;
 %% Parametros de Simulação
-config.nLines112=15;
-config.nLinesINEM=15;
-config.nOperators112=10;
-config.nOperatorsINEM=10;
+config.nLines112=130;
+config.nLinesINEM=113;
+config.nOperators112=30;
+config.nOperatorsINEM=73;
 
 Lines112=zeros(config.nLines112,1);
 LinesINEM=zeros(config.nLinesINEM,1);
@@ -17,7 +17,10 @@ FEINEM112=zeros((config.nLines112-config.nOperators112),1);
 stateData.occupiedLines112 = 0;      % Linhas ocupadas do 112
 stateData.occupiedLinesINEM = 0;      % Linhas ocupadas do INEM
 stateData.totalCalls = 0;         % Numero total de chamadas
-stateData.bloquedCalls = 0;       % Chamadas bloqueadas
+stateData.totalCalls112 = 0;         % Numero total de chamadas
+stateData.totalCallsINEM = 0;         % Numero total de chamadas
+stateData.bloquedCallsINEM = 0;       % Chamadas bloqueadas do INEM
+stateData.bloquedCalls112 = 0;       % Chamadas bloqueadas do 112
 stateData.reqServiceTime112 = 0;     % Tempo total de oferta
 stateData.reqServiceTimeINEM = 0; 
 stateData.carriedServiceTime112 = 0; % Tempo total de transporte
@@ -83,7 +86,7 @@ while ( idx_S < length(Start1) )
                     FEINEM112, ...
                     Type1, ...
                     idx_tfim(idx_R), ...
-                    stateData,tfim_ord,idx_tfim,End,HandlingTime1(idx_tfim(idx_R)),Start, config);
+                    stateData,tfim_ord,idx_tfim,End,HandlingTime1,Start, config);
                 if(wait==1)
                     idx_R=find(idx_tfim == last);
                 end
@@ -108,6 +111,11 @@ end
 %     'Linewidth',3,...
 %     'Color',[0 0 1]);
 % 
+%%
+%Resultados
+B_real112=stateData.bloquedCalls112/stateData.totalCalls112;
+B_realINEM=stateData.bloquedCallsINEM/stateData.totalCallsINEM;
+
 % % % Tráfego Oferecido
 % % A_real=stateData.reqServiceTime/tinicio(end);
 % % A_teorico=(config.bhca*config.holdTime)/3600;

@@ -12,28 +12,18 @@ if ( strcmp(Type(idx),'112'))
                 Lines112(idx_112)=0;
                 a = find(Operators112 == idx);
                 Operators112(a)=0;
-                m = min(Lines112(Lines112>0));
-                
-                
-                if(m ~= 0)
-                    while Operators112 (a) == 0
-                        if(m~=0)
-                            if(verificar_ope(FE112,m)==1)
-                                Operators112(a)=m; %%Estou aqui
-                                Start(m)=End(idx);
-                                End(m)= Start(m)+ HandlingTime;
-                                
-                                [tfim_ord, idx_tfim]=sort(End);
-                                state_vars.occupiedOpe112=state_vars.occupiedOpe112+1;
-                                wait_R=1;
-                                break;
-                            else
-                                m = min(Lines112(Lines112>m));
-                            end
-                        else
-                            break;
-                        end
-                    end
+                m = min(FE112(FE112>0));
+                if(m ~= 0) %Procura a existência de alguma chamada do 112 em fila de espera
+                    Operators112(a)=m;
+                    a = find (FE112==m);
+                    FE112(a)=0;
+                    Start(m)=End(idx);
+                    End(m)= Start(m)+ HandlingTime(m);
+                    [tfim_ord, idx_tfim]=sort(End);
+                    state_vars.occupiedOpe112=state_vars.occupiedOpe112+1;
+                    wait_R=1;
+                    break;
+                    
                 end
                 
             end
@@ -52,32 +42,24 @@ else
                 a = find(OperatorsINEM == idx);
                 OperatorsINEM(a)=0;
                 n = min(FEINEM(FEINEM>0));
-                if (n ~= 0)
-                    while OperatorsINEM (a) == 0
-                        if(n~=0)
-                            if(verificar_ope(FEINEM,n)==1)
-                                OperatorsINEM(a)=n; %%Estou aqui
-                                Start(n)=End(idx);
-                                End(n)= Start(n)+ HandlingTime;
-                                [tfim_ord, idx_tfim]=sort(End);
-                                a = find (FEINEM==n);
-                                FEINEM(a)=0;
-                                state_vars.occupiedOpeINEM=state_vars.occupiedOpeINEM+1;
-                                wait_R=1;
-                                x = min (FEINEM112(FEINEM112>0));
-                                if( x ~=0)
-                                    FEINEM(a)=x;
-                                    b = find (FEINEM112==x);
-                                    FEINEM112(b)=0;
-                                end
-                                break;
-                            else
-                                n = min(LinesINEM(LinesINEM>n));
-                            end
-                        else
-                            break;
-                        end
+                if (n ~= 0)                 %Procura alguma chamada do INEM que esteja em fila de espera
+                    OperatorsINEM(a)=n;
+                    a = find (FEINEM==n);
+                    FEINEM(a)=0;
+                    Start(n)=End(idx);
+                    End(n)= Start(n)+ HandlingTime(n);
+                    [tfim_ord, idx_tfim]=sort(End);
+                    state_vars.occupiedOpeINEM=state_vars.occupiedOpeINEM+1;
+                    wait_R=1;
+                    x = min (FEINEM112(FEINEM112>0));
+                    if( x ~=0)              %Procura alguma chamda que esteja na fila de espera do INEM nas linhas do 112
+                        FEINEM(a)=x;
+                        b = find (FEINEM112==x);
+                        FEINEM112(b)=0;
+                        state_vars.occupiedLinesINEM=state_vars.occupiedLinesINEM+1;
+                        state_vars.occupiedLines112=state_vars.occupiedLines112-1;
                     end
+                    break;
                 end
                 break;
             end
