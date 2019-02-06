@@ -1,0 +1,14 @@
+config.nLines112=100;
+config.nLinesINEM=115;
+config.nOperators112=32;
+config.nOperatorsINEM=73;
+
+%Configuração ao qual o sistema fica com apenas 1% de probabilidade de
+%bloqueio
+%% Parametros de Simulação
+config.nLines112=157;
+config.nLinesINEM=107;
+config.nOperators112=32;
+config.nOperatorsINEM=74;
+
+%Configuração no qual o sistema do INEM com aproximadamente 0,1% de probabilidade de bloqueio
