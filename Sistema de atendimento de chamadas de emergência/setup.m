@@ -1,7 +1,8 @@
-function [updated_nOperators112,updated_nOperatorsINEM,updated_Lines112,updated_LinesINEM,updated_FE112,updated_FEINEM,updated_FEINEM112,not_attended,call_idx, updated_state_vars]=setup(Operators112,OperatorsINEM, Lines112,LinesINEM,FilaDeEspera112,FilaDeEsperaINEM,FEINEM112,Type, idx, duracao, state_vars, config_vars)
+function [updated_nOperators112,updated_nOperatorsINEM,updated_Lines112,updated_LinesINEM,updated_FE112,updated_FEINEM,updated_FEINEM112,not_attended,call_idx,transport_line_idx, updated_state_vars]=setup(Operators112,OperatorsINEM, Lines112,LinesINEM,FilaDeEspera112,FilaDeEsperaINEM,FEINEM112,Type, idx, duracao, state_vars, config_vars)
 
 % SETUP (Inicio de chamada)
 call_idx=idx;
+transport_line_idx=0;
 state_vars.totalCalls  = state_vars.totalCalls+1;
 if( strcmp(Type(idx),'112'))
     state_vars.totalCalls112=state_vars.totalCalls112+1;
@@ -20,25 +21,26 @@ if( strcmp(Type(idx),'112'))
             for idx_Opt=1: config_vars.nOperators112
                 if (Operators112(idx_Opt) == 0)
                     Operators112(idx_Opt)=idx;
-                    
                     call_idx = idx;
+                    transport_line_idx=idx_Opt;
                     break;
                 end
             end
         else
             % Chamada em fila de espera NO 112
             not_attended = true;
-            state_vars.calltowait=state_vars.calltowait+1;
+            state_vars.calltowait = state_vars.calltowait + 1 ;
             for idx_112 = 1: length(FilaDeEspera112)
                 if (FilaDeEspera112(idx_112)==0)
                     FilaDeEspera112(idx_112)=idx;
                     call_idx=idx;
-                    break,
+                    break;
                 end
             end
         end
     else
         state_vars.bloquedCalls112=state_vars.bloquedCalls112+1;
+        state_vars.bloquedCalls=state_vars.bloquedCalls+1;
         not_attended=true;
         call_idx=idx;
     end
@@ -72,7 +74,7 @@ else
                 if (FilaDeEsperaINEM(idx_1)==0)
                     FilaDeEsperaINEM(idx_1)=idx;
                     call_idx=idx;
-                    break,
+                    break;
                 end
             end
         end
@@ -96,6 +98,7 @@ else
             end
         else
             state_vars.bloquedCallsINEM=state_vars.bloquedCallsINEM+1;
+            state_vars.bloquedCalls=state_vars.bloquedCalls+1;
             not_attended=true;
             call_idx=idx;
         end
@@ -109,4 +112,5 @@ updated_LinesINEM=LinesINEM;
 updated_FE112=FilaDeEspera112;
 updated_FEINEM=FilaDeEsperaINEM;
 updated_FEINEM112=FEINEM112;
+
 end

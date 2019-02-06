@@ -1,4 +1,4 @@
-function [tfim_ord,idx_tfim,updated_Operators112,updated_OperatorsINEM,updated_Lines112,updated_LinesINEM,UP_FE112,UP_FEINEM,UP_FEINEM112, updated_state_vars, wait_R,End,Start,last]=release(Operators112,OperatorsINEM,Lines112,LinesINEM,FE112,FEINEM,FEINEM112,Type, idx, state_vars,tfim_ord,idx_tfim,End,HandlingTime,Start, config_vars)
+function [tfim_ord,idx_tfim,updated_Operators112,updated_OperatorsINEM,updated_Lines112,updated_LinesINEM,UP_FE112,UP_FEINEM,UP_FEINEM112, updated_state_vars, wait_R,End,Start,last,UP_wait_time,UP_wait_time112]=release(Operators112,OperatorsINEM,Lines112,LinesINEM,FE112,FEINEM,FEINEM112,Type, idx, state_vars,tfim_ord,idx_tfim,End,HandlingTime,Start,wait_time,wait_time112, config_vars)
 wait_R=0;
 if ( strcmp(Type(idx),'112'))
     if (idx ~= 0)
@@ -17,6 +17,12 @@ if ( strcmp(Type(idx),'112'))
                     Operators112(a)=m;
                     a = find (FE112==m);
                     FE112(a)=0;
+                    for k=1:length(wait_time112)
+                        if (wait_time112(k)==0)
+                            wait_time112(k)=End(idx)-Start(m);
+                        break;
+                        end
+                    end
                     Start(m)=End(idx);
                     End(m)= Start(m)+ HandlingTime(m);
                     [tfim_ord, idx_tfim]=sort(End);
@@ -46,6 +52,12 @@ else
                     OperatorsINEM(a)=n;
                     a = find (FEINEM==n);
                     FEINEM(a)=0;
+                    for i=1:length(wait_time)
+                        if (wait_time(i)==0)
+                            wait_time(i)=End(idx)-Start(n);
+                        break;
+                        end
+                    end
                     Start(n)=End(idx);
                     End(n)= Start(n)+ HandlingTime(n);
                     [tfim_ord, idx_tfim]=sort(End);
@@ -80,4 +92,6 @@ tfim_ord = tfim_ord;
 idx_tfim = idx_tfim;
 End=End;
 Start=Start;
+UP_wait_time=wait_time;
+UP_wait_time112=wait_time112;
 end
